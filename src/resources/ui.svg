@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="240"
+   height="240"
+   viewBox="0 0 240 240"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="ui.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="184.41124"
+     inkscape:cy="-13.51812"
+     inkscape:document-units="px"
+     inkscape:current-layer="svg8"
+     showgrid="true"
+     units="px"
+     inkscape:pagecheckerboard="false"
+     inkscape:window-width="1823"
+     inkscape:window-height="1166"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4482" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+     style="fill:#4a4e5e;fill-opacity:1;stroke-width:1.35873246"
+     d="M 0 0 L 0 120 A 120 120 0 0 1 120 0 L 0 0 z M 120 0 A 120 120 0 0 1 240 120 L 240 0 L 120 0 z M 240 120 A 120 120 0 0 1 120 240 L 240 240 L 240 120 z M 120 240 A 120 120 0 0 1 0 120 L 0 240 L 120 240 z "
+     id="rect4489" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1" />
+  <path
+     style="fill:#4a4e5e;fill-opacity:1;stroke-width:1"
+     d="M 80 0 A 40 40 0 0 0 120 40 A 40 40 0 0 0 160 0 L 80 0 z "
+     id="path4492" />
+  <circle
+     r="40"
+     cy="-40"
+     cx="40"
+     id="circle4494"
+     style="fill:#4a4e5e;fill-opacity:1;stroke-width:1" />
+  <circle
+     style="fill:#4a4e5e;fill-opacity:1;stroke-width:1"
+     id="circle4499"
+     cx="120"
+     cy="-40"
+     r="40" />
+  <circle
+     r="40"
+     cy="-40"
+     cx="200"
+     id="circle4501"
+     style="fill:#4a4e5e;fill-opacity:1;stroke-width:1" />
+</svg>
