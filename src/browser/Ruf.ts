@@ -1,0 +1,6 @@
+class Ruf
+{
+	constructor()
+	{
+	}
+}

@@ -1,0 +1,23 @@
+{
+  "name": "rofruf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build:browser": "tsc -p src/browser",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LapisTech/RofRuf.git"
+  },
+  "author": "Hiroki",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/LapisTech/RofRuf/issues"
+  },
+  "homepage": "https://github.com/LapisTech/RofRuf#readme"
+}
