@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "build:browser": "tsc -p src/browser",
+    "build:site": "tsc -p src/site",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

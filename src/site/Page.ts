@@ -1,8 +1,10 @@
 class Page
 {
+	protected app: App;
 	protected parent: HTMLElement;
-	constructor( page: HTMLElement )
+	constructor( app: App, page: HTMLElement )
 	{
+		this.app = app;
 		this.parent = page;
 		this.init();
 	}

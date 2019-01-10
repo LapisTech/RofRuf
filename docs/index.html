@@ -11,12 +11,9 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link rel="apple-touch-icon" sizes="152x152" href="./apple-touch-icon-precomposed.png?1">
-	<style type="text/css">*{box-sizing:border-box;}html{height:100%;}body{margin:0;padding::0;height:100%;overflow:hidden;position:relative;background-color:#4a4e5e;}img{image-rendering:crisp-edges;border:0;}body > div{width:100vmin;height:100vmin;border-radius:50%;margin:auto;top:0;bottom:0;left:0;right:0;position:absolute;overflow:hidden;}body > div:not(.show){display:none;}button{cursor:pointer;display:block;padding:0;margin:0;border:0;outline:none;}</style>
-<style type="text/css">
-@font-face { font-family: "Icon"; src: url( ./icon.ttf ); }
-left-menu button{width:25vmin;display:inline-block;height:100%;}
-</style>
-	<link rel="stylesheet" type="text/css" href="/style.css?1">
+	<style type="text/css">@font-face {font-family:'Icon';src:url(./icon.ttf);}*{box-sizing:border-box;}html{height:100%;}body{margin:0;padding::0;height:100%;overflow:hidden;position:relative;background-color:#4a4e5e;}img{image-rendering:crisp-edges;border:0;}body > div{width:100vmin;height:100vmin;border-radius:50%;margin:auto;top:0;bottom:0;left:0;right:0;position:absolute;overflow:hidden;}body > div:not(.show){display:none;}button{cursor:pointer;display:block;padding:0;margin:0;border:0;outline:none;}menu-item{width:30vmin;}</style>
+<style type="text/css"></style>
+	<link rel="stylesheet" type="text/css" href="./style.css?1">
 	<script type="text/javascript" src="./app.js?1"></script>
 </head>
 <body>
@@ -29,12 +26,15 @@ left-menu button{width:25vmin;display:inline-block;height:100%;}
 	<div id="egg">
 		<bottom-button style="--icon:'🥚'"></bottom-button>
 		<left-menu style="--icon:'⚙'">
-			<button>test1</button>
-			<button>test2</button>
-			<button>test3</button>
-			<button>test4</button>
+			<menu-item quantity="100">test1</menu-item>
+			<menu-item disabled>test2</menu-item>
+			<menu-item quantity="0">test3</menu-item>
+			<menu-item selected>test4</menu-item>
 		</left-menu>
-		<right-menu></right-menu>
+		<right-menu style="--icon:'📦'"></right-menu>
 	</div>
+	<popup-window id="popup">
+		<div><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p></div>
+	</popup-window>
 </body>
 </html>

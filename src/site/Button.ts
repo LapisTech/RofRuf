@@ -35,7 +35,7 @@ class TopButton extends Button
 	protected initStyle( style: string[] )
 	{
 		style.push(
-			':host-context( .on ) { top: calc( var( --size ) / -2 ); }',
+			':host-context( .on ), :host( .on ) { top: calc( var( --size ) / -2 ); }',
 			':host { left: 0; right: 0; top: calc( var( --size ) * -1 ); }',
 			':host > button:before { line-height: calc( var( --size ) / 2 ); padding-top: 50%; }'
 		);
@@ -48,7 +48,7 @@ class BottomButton extends Button
 	protected initStyle( style: string[] )
 	{
 		style.push(
-			':host-context( .on ) { bottom: calc( var( --size ) / -2 ); }',
+			':host-context( .on ), :host( .on ) { bottom: calc( var( --size ) / -2 ); }',
 			':host { left: 0; right: 0; bottom: calc( var( --size ) * -1 ); }',
 			':host > button:before { line-height: calc( var( --size ) / 2 ); padding-bottom: 50%; }'
 		);
@@ -61,7 +61,7 @@ class LeftButton extends Button
 	protected initStyle( style: string[] )
 	{
 		style.push(
-			':host-context( .on ) { left: calc( var( --size ) / -2 ); }',
+			':host-context( .on ), :host( .on ) { left: calc( var( --size ) / -2 ); }',
 			':host { top: 0; bottom: 0; left: calc( var( --size ) * -1 ); }',
 			':host > button:before { line-height: var( --size ); padding-left: 50%; }'
 		);
@@ -74,7 +74,7 @@ class RightButton extends Button
 	protected initStyle( style: string[] )
 	{
 		style.push(
-			':host-context( .on ) { right: calc( var( --size ) / -2 ); }',
+			':host-context( .on ), :host( .on ) { right: calc( var( --size ) / -2 ); }',
 			':host { top: 0; bottom: 0; right: calc( var( --size ) * -1 ); }',
 			':host > button:before { line-height: var( --size ); padding-right: 50%; }'
 		);
