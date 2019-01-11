@@ -25,6 +25,5 @@
     "localizecss": "github:HirokiMiyaoka/LocalizeCSS"
   },
   "dependencies": {
-    "character-map": "^1.1.0"
   }
 }
