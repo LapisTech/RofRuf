@@ -23,8 +23,12 @@ class Egg extends Page {
         });
     }
     hatch() {
-        const popup = this.app.popup();
-        popup.clear();
+        const contents = document.createElement('div');
+        contents.classList.add('hatch');
+        const modal = this.app.popup();
+        modal.clear();
+        modal.appendChild(contents);
+        modal.show();
     }
     selectedItem() {
         const items = this.itemmenu.children;
@@ -54,6 +58,26 @@ class Egg extends Page {
         });
     }
 }
+class Scroll extends HTMLElement {
+    constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        const style = document.createElement('style');
+        style.innerHTML = this.initStyle([
+            ':host { display: block; overflow: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }',
+            ':host::-webkit-scrollbar { width: var( --scr-size, 1vmin ); height: var( --scr-size, 1vmin ); }',
+            ':host::-webkit-scrollbar-track { background: transparent;}',
+            ':host::-webkit-scrollbar-thumb { background: var( --scr-color, #afb1de ); }',
+        ]).join('');
+        const slot = document.createElement('slot');
+        shadow.appendChild(style);
+        shadow.appendChild(slot);
+    }
+    initStyle(style) { return style; }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    customElements.define('scroll-area', Scroll);
+});
 class Menu extends HTMLElement {
     constructor() {
         super();
@@ -67,8 +91,8 @@ class Menu extends HTMLElement {
             ':host > div > button:before, :host > div > button:after { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; text-align: center; box-sizing: border-box; font-size: var( --fsize, 7vmin ); }',
             ':host > div > button:before { content: var( --icon, "" ); }',
             ':host > div > button:after { content: "×"; }',
-            ':host > div > div { width: 100%; height: 100%; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overflow: hidden; }',
-            ':host > div > div > div { display: flex; }',
+            ':host > div > scroll-area { width: 100%; height: 100%; overflow: hidden; }',
+            ':host > div > scroll-area > div { display: flex; }',
         ]).join('');
         this.parent = document.createElement('div');
         const button = document.createElement('button');
@@ -86,7 +110,7 @@ class Menu extends HTMLElement {
             this.parent.classList.remove('show');
         });
         this.parent.appendChild(button);
-        const wrapper = document.createElement('div');
+        const wrapper = new Scroll();
         const contents = document.createElement('div');
         const slot = document.createElement('slot');
         contents.appendChild(slot);
@@ -117,25 +141,25 @@ class Menu extends HTMLElement {
 }
 class TopMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { top: 0; }', ':host { left: 0; right: 0; top: 0; width: var( --size ); }', ':host > div { top: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; bottom: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; top: 0; }', ':host > div > button:before { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > div { overflow-y: auto; }', ':host > div > div > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; }');
+        style.push(':host-context( .on ) > div { top: 0; }', ':host { left: 0; right: 0; top: 0; width: var( --size ); }', ':host > div { top: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; bottom: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; top: 0; }', ':host > div > button:before { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > scroll-area { overflow-y: auto; }', ':host > div > scroll-area > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; }');
         return style;
     }
 }
 class BottomMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { bottom: 0; }', ':host { left: 0; right: 0; bottom: 0; width: var( --size ); }', ':host > div { bottom: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; top: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; bottom: 0; }', ':host > div > button:before { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > div { overflow-y: auto; }', ':host > div > div > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; }');
+        style.push(':host-context( .on ) > div { bottom: 0; }', ':host { left: 0; right: 0; bottom: 0; width: var( --size ); }', ':host > div { bottom: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; top: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; bottom: 0; }', ':host > div > button:before { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > scroll-area { overflow-y: auto; }', ':host > div > scroll-area > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; }');
         return style;
     }
 }
 class LeftMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { left: 0; }', ':host { top: 0; bottom: 0; left: 0; height: var( --size ); }', ':host > div { left: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; right: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; left: 0; }', ':host > div > button:before { padding-left: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-right: 50%; line-height: var( --size ); }', ':host > div > div { overflow-x: auto; }', ':host > div > div > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; }');
+        style.push(':host-context( .on ) > div { left: 0; }', ':host { top: 0; bottom: 0; left: 0; height: var( --size ); }', ':host > div { left: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; right: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; left: 0; }', ':host > div > button:before { padding-left: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-right: 50%; line-height: var( --size ); }', ':host > div > scroll-area { overflow-x: auto; }', ':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; }');
         return style;
     }
 }
 class RightMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { right: 0; }', ':host { top: 0; bottom: 0; right: 0; height: var( --size ); }', ':host > div { right: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; left: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; right: 0; }', ':host > div > button:before { padding-right: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-left: 50%; line-height: var( --size ); }', ':host > div > div { overflow-x: auto; }', ':host > div > div > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; }');
+        style.push(':host-context( .on ) > div { right: 0; }', ':host { top: 0; bottom: 0; right: 0; height: var( --size ); }', ':host > div { right: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; left: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; right: 0; }', ':host > div > button:before { padding-right: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-left: 50%; line-height: var( --size ); }', ':host > div > scroll-area { overflow-x: auto; }', ':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; }');
         return style;
     }
 }
@@ -252,57 +276,45 @@ var ItemType;
     ItemType[ItemType["Item"] = 0] = "Item";
     ItemType[ItemType["Food"] = 1] = "Food";
 })(ItemType || (ItemType = {}));
-class Popup extends HTMLElement {
+class Modal extends HTMLElement {
     constructor() {
         super();
         const shadow = this.attachShadow({ mode: 'open' });
         const style = document.createElement('style');
         style.innerHTML = this.initStyle([
-            ':host { display: block; visibility: hidden; position: absolute; margin: auto; top:0; bottom: 0; left: 0; right: 0; width: 100vmin; height: 100vmin; overflow: hidden; font-size: var( --fsize, 10vmin ); z-index: var( --z-index, 2147483647 ) }',
+            ':host { display: block; visibility: hidden; position: absolute; margin: auto; top:0; bottom: 0; left: 0; right: 0; width: 100vmin; height: 100vmin; overflow: hidden; font-size: var( --fsize, 10vmin ); }',
             ':host( [ show ] ) { visibility: visible; }',
             ':host > div { transition: width 0.5s, height 0.5s; margin: auto; width: 0; height: 0; position: absolute; top: 0; bottom: 0; left: 0; right: 0; border-radius: 50%; overflow: hidden; background-color: rgba( 0, 0, 0, 0.6 ); }',
-            ':host( [ show ] ) > div { width: 100%; height: 100%; }',
-            ':host > div > div { width: 60%; height: 0; margin: auto; box-sizing: border-box; padding: 0; overflow: auto; transition: height 0.5s ease 1s, padding 0.5s ease 1s; background-color: #57575f; }',
-            ':host( [ show ] ) > div > div { height: 100%; padding: 5vmin 0; }',
+            ':host( [ show ]:not( [ hide] ) ) > div { width: 100%; height: 100%; }',
+            ':host( [ hide ] ) > div { transition: width 0.5s ease 0.5s, height 0.5s ease 0.5s; }',
+            ':host > div > scroll-area { margin: auto; box-sizing: border-box; padding: 0; position: absolute; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; background-color: #57575f; }',
         ]).join('');
         const wrapper = document.createElement('div');
         wrapper.addEventListener('click', (event) => { event.stopPropagation(); });
-        const contents = document.createElement('div');
+        const contents = new Scroll();
         wrapper.appendChild(contents);
         const slot = document.createElement('slot');
         contents.appendChild(slot);
-        this.lbutton = new LeftButton();
-        this.lbutton.setAttribute('mode', 'cancel');
-        this.lbutton.addEventListener('click', () => { if (!this.onCancel || !this.onCancel()) {
+        this.initContents();
+        this.cbutton.setAttribute('mode', 'cancel');
+        this.cbutton.addEventListener('click', () => { if (!this.onCancel || !this.onCancel()) {
             this.hide();
         } });
-        wrapper.appendChild(this.lbutton);
-        this.rbutton = new RightButton();
-        this.rbutton.setAttribute('mode', 'ok');
-        this.lbutton.addEventListener('click', () => { if (!this.onOK || !this.onOK()) {
+        wrapper.appendChild(this.cbutton);
+        this.obutton.setAttribute('mode', 'ok');
+        this.obutton.addEventListener('click', () => { if (!this.onOK || !this.onOK()) {
             this.hide();
         } });
-        wrapper.appendChild(this.rbutton);
+        wrapper.appendChild(this.obutton);
         shadow.appendChild(style);
         shadow.appendChild(wrapper);
     }
     initStyle(style) { return style; }
+    initContents() { }
     clear() {
         const c = this.children;
         for (let i = c.length - 1; 0 <= i; --i) {
             this.removeChild(c[i]);
-        }
-    }
-    enableCancel(callback) {
-        this.onCancel = callback;
-        if (this.hasAttribute('show')) {
-            this.lbutton.classList.add('on');
-        }
-    }
-    enableOK(callback) {
-        this.onOK = callback;
-        if (this.hasAttribute('show')) {
-            this.rbutton.classList[callback ? 'add' : 'remove']('on');
         }
     }
     show() {
@@ -317,19 +329,26 @@ class Popup extends HTMLElement {
             this.enableCancel(this.onCancel);
             this.enableOK(this.onOK);
             this.timer = 0;
-        }, 1000);
+        }, 500);
     }
     hide() {
-        if (this.hasAttribute('show')) {
-            this.removeAttribute('show');
+        if (!this.hasAttribute('show')) {
+            return;
+        }
+        if (this.hasAttribute('hide')) {
             return;
         }
         clearTimeout(this.timer);
-        this.timer = 0;
-        this.lbutton.classList.remove('on');
-        this.rbutton.classList.remove('on');
+        this.setAttribute('hide', 'hide');
+        this.cbutton.classList.remove('on');
+        this.obutton.classList.remove('on');
         this.clear();
         this.onCancel = this.onOK = undefined;
+        this.timer = setTimeout(() => {
+            this.removeAttribute('show');
+            this.removeAttribute('hide');
+            this.timer = 0;
+        }, 1000);
     }
     updateShow(show) {
         if (show) {
@@ -347,9 +366,111 @@ class Popup extends HTMLElement {
                 break;
         }
     }
+    enableCancel(callback) { this.onCancel = callback; }
+    enableOK(callback) { this.onOK = callback; }
+}
+class Popup extends Modal {
+    initStyle(style) {
+        style.push(':host { z-index: var( --z-index, 2100000000 ) }', ':host > div > scroll-area { width: 60%; height: 0; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; left: 0; right: 0; }', ':host( [ hide ] ) > div > scroll-area { transition: height 0.5s, padding 0.5s; }', ':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { height: 100%; padding: 5vmin 0; }');
+        return style;
+    }
+    initContents() {
+        this.cbutton = new LeftButton();
+        this.obutton = new RightButton();
+    }
+    enableCancel(callback) {
+        this.onCancel = callback;
+        if (this.hasAttribute('show')) {
+            this.cbutton.classList.add('on');
+        }
+    }
+    enableOK(callback) {
+        this.onOK = callback;
+        if (this.hasAttribute('show')) {
+            this.obutton.classList[callback ? 'add' : 'remove']('on');
+        }
+    }
+}
+class Dialog extends Modal {
+    initStyle(style) {
+        style.push(':host { z-index: var( --z-index, 2100000050 ) }', ':host > div > scroll-area { width: 0; height: 60%; transition: width 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; bottom: 0; left: 0; }', ':host( [ hide ] ) > div > scroll-area { transition: width 0.5s, padding 0.5s; }', ':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { width: 100%; padding: 0 5vmin; }');
+        return style;
+    }
+    initContents() {
+        this.cbutton = new TopButton();
+        this.obutton = new BottomButton();
+    }
+    enableCancel(callback) {
+        this.onCancel = callback;
+        if (this.hasAttribute('show')) {
+            this.cbutton.classList[callback ? 'add' : 'remove']('on');
+        }
+    }
+    enableOK(callback) {
+        this.onOK = callback;
+        if (this.hasAttribute('show')) {
+            this.obutton.classList.add('on');
+        }
+    }
 }
 document.addEventListener('DOMContentLoaded', () => {
     customElements.define('popup-window', Popup);
+    customElements.define('dialog-window', Dialog);
+});
+class Message extends HTMLElement {
+    constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        const style = document.createElement('style');
+        style.innerHTML = this.initStyle([
+            ':host { display: block; position: absolute; margin: auto; top:0; bottom: 0; left: 0; right: 0; width: 100vmin; height: fit-content; overflow: hidden; font-size: var( --fsize, 5vmin ); z-index: var( --z-index, 2100000100 ) }',
+            ':host > div { width: 100%; height: fit-content; text-align: center; }',
+            ':host > div > div { overflow: hidden; position: relative; width: 100%; height: 0; margin: 0; transition: height 0.5s, margin 0.5s; background-color: var( --back, #4a4e5e ); }',
+            ':host > div > div.error { background-color: var( --error, #ff5252 ); }',
+            ':host > div > div.success { background-color: var( --success, #34ef6e ); }',
+            ':host > div > div + div { margin-top: 0.2rem; }',
+        ]).join('');
+        this.contents = document.createElement('div');
+        shadow.appendChild(style);
+        shadow.appendChild(this.contents);
+    }
+    initStyle(style) { return style; }
+    addMessage(message, time = 2000, type = '') {
+        const area = document.createElement('div');
+        if (type) {
+            area.classList.add(type);
+        }
+        const text = document.createElement('div');
+        text.innerHTML = message;
+        area.appendChild(text);
+        this.contents.appendChild(area);
+        const rect = text.getBoundingClientRect();
+        area.style.height = rect.height + 'px';
+        area.addEventListener('transitionend', (event) => {
+            const rect = area.getBoundingClientRect();
+            if (rect.height < 1) {
+                this.contents.removeChild(area);
+            }
+        });
+        setTimeout(() => { area.style.height = '0'; }, time);
+    }
+    errorMessage(message, time) { this.addMessage(message, time, 'error'); }
+    successMessage(message, time) { this.addMessage(message, time, 'success'); }
+    removeAllMessage() {
+        const c = this.contents.children;
+        for (let i = c.length - 1; 0 <= i; --i) {
+            c[i].style.height = '0';
+        }
+    }
+    clear() {
+        const c = this.contents.children;
+        for (let i = c.length - 1; 0 <= i; --i) {
+            this.contents.removeChild(c[i]);
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    customElements.define('system-message', Message);
 });
 class User {
     constructor() {
@@ -430,10 +551,16 @@ class App {
         }
     }
     popup() { return this.config.popup; }
+    dialog() { return this.config.dialog; }
+    message() { return this.config.message; }
+    error(message, time) { return this.message().errorMessage(message, time); }
+    success(message, time) { return this.message().successMessage(message, time); }
 }
 document.addEventListener('DOMContentLoaded', () => {
     const app = new App({
         popup: document.getElementById('popup'),
+        dialog: document.getElementById('dialog'),
+        message: document.getElementById('message'),
         main: document.getElementById('main'),
         egg: document.getElementById('egg'),
     });

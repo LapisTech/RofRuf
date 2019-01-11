@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build:site": "tsc -p src/site",
+    "localize": "node node_modules/localizecss/dest/localizecss.js -d en src/localize/ docs/lang/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/LapisTech/RofRuf/issues"
   },
-  "homepage": "https://github.com/LapisTech/RofRuf#readme"
+  "homepage": "https://github.com/LapisTech/RofRuf#readme",
+  "devDependencies": {
+    "localizecss": "github:HirokiMiyaoka/LocalizeCSS"
+  }
 }

@@ -16,8 +16,8 @@ class Menu extends HTMLElement
 			':host > div > button:before, :host > div > button:after { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; text-align: center; box-sizing: border-box; font-size: var( --fsize, 7vmin ); }',
 			':host > div > button:before { content: var( --icon, "" ); }',
 			':host > div > button:after { content: "×"; }',
-			':host > div > div { width: 100%; height: 100%; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overflow: hidden; }',
-			':host > div > div > div { display: flex; }',
+			':host > div > scroll-area { width: 100%; height: 100%; overflow: hidden; }',
+			':host > div > scroll-area > div { display: flex; }',
 		] ).join( '' );
 
 		this.parent = document.createElement( 'div' );
@@ -40,7 +40,7 @@ class Menu extends HTMLElement
 		} );
 		this.parent.appendChild( button );
 
-		const wrapper = document.createElement( 'div' );
+		const wrapper = new Scroll();//document.createElement( 'div' );
 		const contents = document.createElement( 'div' );
 		const slot = document.createElement( 'slot' );
 		contents.appendChild( slot );
@@ -87,8 +87,8 @@ class TopMenu extends Menu
 			':host > div.show { height: 100vmin; top: 0; }',
 			':host > div > button:before { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }',
 			':host > div > button:after { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }',
-			':host > div > div { overflow-y: auto; }',
-			':host > div > div > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; }'
+			':host > div > scroll-area { overflow-y: auto; }',
+			':host > div > scroll-area > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; }'
 		);
 		return style;
 	}
@@ -106,8 +106,8 @@ class BottomMenu extends Menu
 			':host > div.show { height: 100vmin; bottom: 0; }',
 			':host > div > button:before { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }',
 			':host > div > button:after { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }',
-			':host > div > div { overflow-y: auto; }',
-			':host > div > div > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; }'
+			':host > div > scroll-area { overflow-y: auto; }',
+			':host > div > scroll-area > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; }'
 		);
 		return style;
 	}
@@ -125,8 +125,8 @@ class LeftMenu extends Menu
 			':host > div.show { width: 100vmin; left: 0; }',
 			':host > div > button:before { padding-left: 50%; line-height: var( --size ); }',
 			':host > div > button:after { padding-right: 50%; line-height: var( --size ); }',
-			':host > div > div { overflow-x: auto; }',
-			':host > div > div > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; }'
+			':host > div > scroll-area { overflow-x: auto; }',
+			':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; }'
 		);
 		return style;
 	}
@@ -144,8 +144,8 @@ class RightMenu extends Menu
 			':host > div.show { width: 100vmin; right: 0; }',
 			':host > div > button:before { padding-right: 50%; line-height: var( --size ); }',
 			':host > div > button:after { padding-left: 50%; line-height: var( --size ); }',
-			':host > div > div { overflow-x: auto; }',
-			':host > div > div > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; }'
+			':host > div > scroll-area { overflow-x: auto; }',
+			':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; }'
 		);
 		return style;
 	}

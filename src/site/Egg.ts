@@ -24,9 +24,13 @@ class Egg extends Page
 
 	private hatch()
 	{
-		const popup = this.app.popup();
-		popup.clear();
+		const contents = document.createElement( 'div' );
+		contents.classList.add( 'hatch' );
 
+		const modal = this.app.popup();
+		modal.clear();
+		modal.appendChild( contents );
+		modal.show();
 	}
 
 	private selectedItem()

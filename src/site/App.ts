@@ -3,10 +3,12 @@
 /// <reference path="./Egg.ts" />
 
 // Component
+/// <reference path="./Scroll.ts" />
 /// <reference path="./Menu.ts" />
 /// <reference path="./Button.ts" />
 /// <reference path="./Item.ts" />
-/// <reference path="./Popup.ts" />
+/// <reference path="./Modal.ts" />
+/// <reference path="./Message.ts" />
 
 // Data
 /// <reference path="./User.ts" />
@@ -15,6 +17,8 @@
 interface AppConfig
 {
 	popup: Popup,
+	dialog: Dialog,
+	message: Message,
 	main: HTMLElement,
 	egg: HTMLElement,
 }
@@ -107,4 +111,12 @@ class App
 	}
 
 	public popup() { return this.config.popup; }
+
+	public dialog() { return this.config.dialog; }
+
+	public message() { return this.config.message; }
+
+	public error( message: string, time?: number ) { return this.message().errorMessage( message, time ); }
+
+	public success( message: string, time?: number ) { return this.message().successMessage( message, time ); }
 }
