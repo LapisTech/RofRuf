@@ -4,7 +4,7 @@ class Egg extends Page
 
 	protected init()
 	{
-		this.itemmenu = <Menu>this.parent.querySelector( 'right-menu' );
+		this.itemmenu = <Menu>this.querySelector( 'right-menu' );
 
 		this.itemmenu.addEventListener( 'close', ( event ) =>
 		{
@@ -12,7 +12,7 @@ class Egg extends Page
 			// TODO: set view.
 		} );
 
-		(<Button>this.parent.querySelector( 'bottom-button' )).addEventListener( 'click', ( event ) =>
+		(<Button>this.querySelector( 'bottom-button' )).addEventListener( 'click', ( event ) =>
 		{
 			event.stopPropagation();
 			const item = this.selectedItem();
@@ -22,15 +22,30 @@ class Egg extends Page
 
 	}
 
+	protected onShow()
+	{
+		this.showMenu();
+	}
+	protected onHide()
+	{
+		this.hideMenu();
+	}
+
 	private hatch()
 	{
 		const contents = document.createElement( 'div' );
 		contents.classList.add( 'hatch' );
 
 		const modal = this.app.popup();
+		modal.enableOK( () => { this.onHatch(); return false; } );
 		modal.clear();
 		modal.appendChild( contents );
 		modal.show();
+	}
+
+	private onHatch()
+	{
+		this.app.goTo( 'main' );
 	}
 
 	private selectedItem()

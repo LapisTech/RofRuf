@@ -1,5 +1,6 @@
 // Page
 /// <reference path="./Page.ts" />
+/// <reference path="./Main.ts" />
 /// <reference path="./Egg.ts" />
 
 // Component
@@ -14,13 +15,18 @@
 /// <reference path="./User.ts" />
 /// <reference path="./Ruf.ts" />
 
+interface AppPage
+{
+	main: Page,//Main,
+	egg: Egg,
+}
+
 interface AppConfig
 {
 	popup: Popup,
 	dialog: Dialog,
 	message: Message,
-	main: HTMLElement,
-	egg: HTMLElement,
+	page: AppPage,//{ [ K in keyof AppPage ]: HTMLElement },
 }
 
 class Language
@@ -87,27 +93,45 @@ class App
 	private config: AppConfig;
 	private lang: Language;
 	private user: User;
-	private egg: Egg;
 
 	constructor( config: AppConfig )
 	{
 		this.config = config;
 		this.lang = new Language();
+		this.initPages();
 
 		this.user = new User();
 
-		this.egg = new Egg( this, config.egg );
-
 		if ( this.user.getRuf() )
 		{
-			this.egg.hide();
+			this.config.page.egg.hide();
 		} else
 		{
-			this.egg.setUser( this.user );
-			this.egg.show();
-			setTimeout( () => { this.egg.showMenu(); }, 1000 );
+			this.config.page.egg.setUser( this.user );
+			//this.config.page.egg.show();
+			setTimeout( () => { this.config.page.egg.show(); }, 500 );
+			//setTimeout( () => { this.config.page.egg.showMenu(); }, 1000 );
 		}
 
+	}
+
+	private initPages()
+	{
+		customElements.define( 'page-main', Main );
+		customElements.define( 'page-egg', Egg );
+		Object.keys( this.config.page ).forEach( ( key: keyof AppPage ) =>
+		{
+			this.config.page[ key ].setApp( this );
+		} );
+	}
+
+	public goTo( page: keyof AppPage )
+	{
+		if ( !this.config.page[ page ] ) { return false; }
+		Object.keys( this.config.page ).forEach( ( key: keyof AppPage ) =>
+		{
+			this.config.page[ key ][ key === page ? 'show' : 'hide' ]();
+		} );
 	}
 
 	public popup() { return this.config.popup; }

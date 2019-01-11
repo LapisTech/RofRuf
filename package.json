@@ -23,5 +23,8 @@
   "homepage": "https://github.com/LapisTech/RofRuf#readme",
   "devDependencies": {
     "localizecss": "github:HirokiMiyaoka/LocalizeCSS"
+  },
+  "dependencies": {
+    "character-map": "^1.1.0"
   }
 }

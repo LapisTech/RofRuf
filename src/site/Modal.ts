@@ -2,7 +2,6 @@ interface ModalClickCallback { (): boolean }
 
 class Modal extends HTMLElement
 {
-	private timer: number;
 	protected onCancel: undefined | ModalClickCallback;
 	protected onOK: undefined | ModalClickCallback;
 	protected cbutton: Button;
@@ -25,9 +24,23 @@ class Modal extends HTMLElement
 		] ).join( '' );
 
 		const wrapper = document.createElement( 'div' );
+		wrapper.addEventListener( 'transitionend', ( event ) =>
+		{
+			if ( !this.hasAttribute( 'hide' ) || event.propertyName !== 'width') { return; }
+			this.removeAttribute( 'show' );
+			this.removeAttribute( 'hide' );
+		} );
 		wrapper.addEventListener( 'click', ( event ) => { event.stopPropagation(); } );
 
 		const contents = new Scroll();
+		contents.addEventListener( 'transitionend', ( event ) =>
+		{
+			if ( event.propertyName !== 'width' && event.propertyName !== 'height' ) { return; }
+			if ( this.hasAttribute( 'hide' ) ) { return; }
+			this.enableCancel( this.onCancel );
+			this.enableOK( this.onOK );
+		} );
+
 		wrapper.appendChild( contents );
 
 		const slot = document.createElement( 'slot' );
@@ -64,13 +77,6 @@ class Modal extends HTMLElement
 			this.setAttribute( 'show', 'show' );
 			return;
 		}
-		if ( this.timer ) { clearTimeout( this.timer ); }
-		this.timer = setTimeout( () =>
-		{
-			this.enableCancel( this.onCancel );
-			this.enableOK( this.onOK );
-			this.timer = 0;
-		}, 500 );
 	}
 
 	public hide()
@@ -78,20 +84,12 @@ class Modal extends HTMLElement
 		if ( !this.hasAttribute( 'show' ) ) { return; }
 		if ( this.hasAttribute( 'hide' ) ) { return; }
 
-		clearTimeout( this.timer );
 		this.setAttribute( 'hide', 'hide' );
 
 		this.cbutton.classList.remove( 'on' );
 		this.obutton.classList.remove( 'on' );
 		this.clear();
 		this.onCancel = this.onOK = undefined;
-
-		this.timer = setTimeout( () =>
-		{
-			this.removeAttribute( 'show' );
-			this.removeAttribute( 'hide' );
-			this.timer = 0;
-		}, 1000 );
 	}
 
 	private updateShow( show: boolean )

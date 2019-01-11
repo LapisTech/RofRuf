@@ -1,34 +1,82 @@
-class Page {
-    constructor(app, page) {
-        this.app = app;
-        this.parent = page;
+class Page extends HTMLElement {
+    constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        const style = document.createElement('style');
+        style.innerHTML = this.initStyle([
+            ':host { width: 100vmin; height: 100vmin; border-radius: 50%; margin: auto; top: 0; bottom: 0; left: 0; right: 0; position: absolute; overflow: hidden; }',
+            ':host( :not( [ show ] ) ) { visibility: hidden; }',
+        ]).join('');
+        const slot = document.createElement('slot');
+        shadow.appendChild(style);
+        shadow.appendChild(slot);
         this.init();
     }
     init() { }
-    hide() { this.parent.classList.remove('show'); }
-    show() { this.parent.classList.add('show'); }
-    hideMenu() { this.parent.classList.remove('on'); }
-    showMenu() { this.parent.classList.add('on'); }
+    initStyle(style) { return style; }
+    static get observedAttributes() { return ['show']; }
+    attributeChangedCallback(attrName, oldVal, newVal) {
+        switch (attrName) {
+            case 'show':
+                this.onChangeShow();
+                break;
+        }
+    }
+    onChangeShow() {
+        if (this.hasAttribute('show')) {
+            this.onShow();
+        }
+        else {
+            this.onHide();
+        }
+    }
+    onShow() { }
+    onHide() { }
+    setApp(app) { this.app = app; }
+    show() { this.setAttribute('show', 'show'); }
+    hide() { this.removeAttribute('show'); }
+    showMenu() { this.classList.add('on'); }
+    hideMenu() { this.classList.remove('on'); }
+}
+class Main extends Page {
+    init() {
+    }
+    onShow() {
+        this.showMenu();
+    }
+    onHide() {
+        this.hideMenu();
+    }
 }
 class Egg extends Page {
     init() {
-        this.itemmenu = this.parent.querySelector('right-menu');
+        this.itemmenu = this.querySelector('right-menu');
         this.itemmenu.addEventListener('close', (event) => {
             const item = this.selectedItem();
         });
-        this.parent.querySelector('bottom-button').addEventListener('click', (event) => {
+        this.querySelector('bottom-button').addEventListener('click', (event) => {
             event.stopPropagation();
             const item = this.selectedItem();
             this.hatch();
         });
     }
+    onShow() {
+        this.showMenu();
+    }
+    onHide() {
+        this.hideMenu();
+    }
     hatch() {
         const contents = document.createElement('div');
         contents.classList.add('hatch');
         const modal = this.app.popup();
+        modal.enableOK(() => { this.onHatch(); return false; });
         modal.clear();
         modal.appendChild(contents);
         modal.show();
+    }
+    onHatch() {
+        this.app.goTo('main');
     }
     selectedItem() {
         const items = this.itemmenu.children;
@@ -232,6 +280,7 @@ class Button extends HTMLElement {
         ]).join('');
         const button = document.createElement('button');
         button.addEventListener('click', (event) => {
+            event.stopPropagation();
             const newEvent = document.createEvent('MouseEvent');
             newEvent.initMouseEvent('click', event.bubbles, event.cancelable, event.view, event.detail, event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null);
             this.dispatchEvent(newEvent);
@@ -290,8 +339,25 @@ class Modal extends HTMLElement {
             ':host > div > scroll-area { margin: auto; box-sizing: border-box; padding: 0; position: absolute; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; background-color: #57575f; }',
         ]).join('');
         const wrapper = document.createElement('div');
+        wrapper.addEventListener('transitionend', (event) => {
+            if (!this.hasAttribute('hide') || event.propertyName !== 'width') {
+                return;
+            }
+            this.removeAttribute('show');
+            this.removeAttribute('hide');
+        });
         wrapper.addEventListener('click', (event) => { event.stopPropagation(); });
         const contents = new Scroll();
+        contents.addEventListener('transitionend', (event) => {
+            if (event.propertyName !== 'width' && event.propertyName !== 'height') {
+                return;
+            }
+            if (this.hasAttribute('hide')) {
+                return;
+            }
+            this.enableCancel(this.onCancel);
+            this.enableOK(this.onOK);
+        });
         wrapper.appendChild(contents);
         const slot = document.createElement('slot');
         contents.appendChild(slot);
@@ -322,14 +388,6 @@ class Modal extends HTMLElement {
             this.setAttribute('show', 'show');
             return;
         }
-        if (this.timer) {
-            clearTimeout(this.timer);
-        }
-        this.timer = setTimeout(() => {
-            this.enableCancel(this.onCancel);
-            this.enableOK(this.onOK);
-            this.timer = 0;
-        }, 500);
     }
     hide() {
         if (!this.hasAttribute('show')) {
@@ -338,17 +396,11 @@ class Modal extends HTMLElement {
         if (this.hasAttribute('hide')) {
             return;
         }
-        clearTimeout(this.timer);
         this.setAttribute('hide', 'hide');
         this.cbutton.classList.remove('on');
         this.obutton.classList.remove('on');
         this.clear();
         this.onCancel = this.onOK = undefined;
-        this.timer = setTimeout(() => {
-            this.removeAttribute('show');
-            this.removeAttribute('hide');
-            this.timer = 0;
-        }, 1000);
     }
     updateShow(show) {
         if (show) {
@@ -539,16 +591,30 @@ class App {
     constructor(config) {
         this.config = config;
         this.lang = new Language();
+        this.initPages();
         this.user = new User();
-        this.egg = new Egg(this, config.egg);
         if (this.user.getRuf()) {
-            this.egg.hide();
+            this.config.page.egg.hide();
         }
         else {
-            this.egg.setUser(this.user);
-            this.egg.show();
-            setTimeout(() => { this.egg.showMenu(); }, 1000);
+            this.config.page.egg.setUser(this.user);
+            setTimeout(() => { this.config.page.egg.show(); }, 500);
         }
+    }
+    initPages() {
+        customElements.define('page-main', Main);
+        customElements.define('page-egg', Egg);
+        Object.keys(this.config.page).forEach((key) => {
+            this.config.page[key].setApp(this);
+        });
+    }
+    goTo(page) {
+        if (!this.config.page[page]) {
+            return false;
+        }
+        Object.keys(this.config.page).forEach((key) => {
+            this.config.page[key][key === page ? 'show' : 'hide']();
+        });
     }
     popup() { return this.config.popup; }
     dialog() { return this.config.dialog; }
@@ -561,7 +627,9 @@ document.addEventListener('DOMContentLoaded', () => {
         popup: document.getElementById('popup'),
         dialog: document.getElementById('dialog'),
         message: document.getElementById('message'),
-        main: document.getElementById('main'),
-        egg: document.getElementById('egg'),
+        page: {
+            main: document.querySelector('page-main'),
+            egg: document.querySelector('page-egg'),
+        },
     });
 });

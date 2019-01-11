@@ -18,6 +18,7 @@ class Button extends HTMLElement
 		const button = document.createElement( 'button' );
 		button.addEventListener( 'click', ( event ) =>
 		{
+			event.stopPropagation();
 			const newEvent = document.createEvent( 'MouseEvent' );
 			newEvent.initMouseEvent( 'click', event.bubbles, event.cancelable, event.view, event.detail, event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null );
 			this.dispatchEvent( newEvent );
