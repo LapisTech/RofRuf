@@ -7,10 +7,10 @@ class User
 
 	public getRuf(): Ruf|null { return null; }
 
-	public getItems(): ItemData[]
+	public getItems()
 	{
-const items: ItemData[] = [ { type: ItemType.Food }, { type: ItemType.Item }, { type: ItemType.Food }, { type: ItemType.Item }, { type: ItemType.Item } ];
+		const items: UserItem[] = [ { id: 1, count: 1 } ];
 
-		return items;
+		return Item.convert( items );
 	}
 }

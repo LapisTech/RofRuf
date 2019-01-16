@@ -1,5 +1,9 @@
+// Tools
+/// <reference path="./Fetch.ts" />
+
 // Page
 /// <reference path="./Page.ts" />
+/// <reference path="./Top.ts" />
 /// <reference path="./Main.ts" />
 /// <reference path="./Egg.ts" />
 
@@ -17,6 +21,7 @@
 
 interface AppPage
 {
+	top: Top,
 	main: Page,//Main,
 	egg: Egg,
 }
@@ -130,7 +135,7 @@ class LanguageManager
 	private addStyle()
 	{
 		const style = document.createElement( 'style' );
-		style.innerHTML = this.lang.get().map( ( l ) => { return 'body[lang="' + l + '"] button[lang="' + l + '"]{background-color:var(--choose-language);}'; } ).join( '' );
+		style.innerHTML = this.lang.get().map( ( l ) => { return 'body[lang="' + l + '"] def-button[lang="' + l + '"]{--back:var(--choose-language);}'; } ).join( '' );
 		document.head.appendChild( style );
 	}
 
@@ -149,7 +154,7 @@ class LanguageManager
 		const contents = document.createElement( 'div' );
 		this.lang.get().forEach( ( lang ) =>
 		{
-			const button = document.createElement( 'button' );
+			const button = new DefaultButton();//document.createElement( 'button' );
 			button.textContent = lang;
 			button.lang = lang;
 			button.addEventListener( 'click', () => { this.setLanguage( lang ); } );
@@ -185,19 +190,32 @@ class App
 
 		if ( this.user.getRuf() )
 		{
-			this.config.page.egg.hide();
+			this.config.page.main.show();
 		} else
 		{
-			this.config.page.egg.setUser( this.user );
-			//this.config.page.egg.show();
-			setTimeout( () => { this.config.page.egg.show(); }, 500 );
-			//setTimeout( () => { this.config.page.egg.showMenu(); }, 1000 );
+			this.config.page.top.show();
 		}
 
 	}
 
+	public showMypage()
+	{
+
+		if ( this.user.getRuf() )
+		{
+			this.goTo( 'main' );
+		} else
+		{
+			this.config.page.egg.setUser( this.user );
+			//this.config.page.egg.show();
+			this.goTo( 'egg' );
+			//setTimeout( () => { this.config.page.egg.showMenu(); }, 1000 );
+		}
+	}
+
 	private initPages()
 	{
+		customElements.define( 'page-top', Top );
 		customElements.define( 'page-main', Main );
 		customElements.define( 'page-egg', Egg );
 		Object.keys( this.config.page ).forEach( ( key: keyof AppPage ) =>

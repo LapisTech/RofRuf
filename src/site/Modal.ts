@@ -26,6 +26,7 @@ class Modal extends HTMLElement
 		const wrapper = document.createElement( 'div' );
 		wrapper.addEventListener( 'transitionend', ( event ) =>
 		{
+			event.stopPropagation();
 			if ( !this.hasAttribute( 'hide' ) || event.propertyName !== 'width') { return; }
 			this.removeAttribute( 'show' );
 			this.removeAttribute( 'hide' );
@@ -35,6 +36,7 @@ class Modal extends HTMLElement
 		const contents = new Scroll();
 		contents.addEventListener( 'transitionend', ( event ) =>
 		{
+			event.stopPropagation();
 			if ( event.propertyName !== 'width' && event.propertyName !== 'height' ) { return; }
 			if ( this.hasAttribute( 'hide' ) ) { return; }
 			this.enableCancel( this.onCancel );
@@ -130,7 +132,7 @@ class Popup extends Modal
 		style.push(
 			':host { z-index: var( --z-index, 2100000000 ) }',
 			':host > div > scroll-area { width: 60%; height: 0; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; left: 0; right: 0; }',
-			':host( [ hide ] ) > div > scroll-area { transition: height 0.5s, padding 0.5s; }',
+			':host( [ hide ] ) > div > scroll-area { transition: height 0.5s, padding 0.5s; text-align: center; }',
 			':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { height: 100%; padding: 5vmin 0; }'
 		);
 		return style;

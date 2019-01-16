@@ -1,3 +1,29 @@
+function Fetch(input, init) {
+    return fetch(input, init).then((result) => {
+        if (result.ok) {
+            return result;
+        }
+        throw result;
+    });
+}
+function GetJson(input) {
+    return fetch(input).then((result) => {
+        if (result.ok) {
+            return result.json();
+        }
+        throw result.json();
+    });
+}
+function PostJson(input, data) {
+    const header = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    const body = JSON.stringify(data);
+    return fetch(input, { method: 'POST', headers: header, body: body }).then((result) => {
+        if (result.ok) {
+            return result.json();
+        }
+        throw result.json();
+    });
+}
 class Page extends HTMLElement {
     constructor() {
         super();
@@ -37,6 +63,63 @@ class Page extends HTMLElement {
     hide() { this.removeAttribute('show'); }
     showMenu() { this.classList.add('on'); }
     hideMenu() { this.classList.remove('on'); }
+}
+class Top extends Page {
+    init() {
+        TitleScreen.init();
+        const title = this.querySelector('title-screen');
+        if (!title) {
+            return;
+        }
+        title.addEventListener('play', () => { this.app.showMypage(); });
+    }
+}
+class TitleScreen extends HTMLElement {
+    static init() {
+        customElements.define('title-screen', this);
+    }
+    constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        const style = document.createElement('style');
+        style.innerHTML = [
+            ':host { display: block; width: 100%; height: 100%; }',
+            ':host > div { position: relative; width: 100%; height: 100%; }',
+            ':host > div > div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: black; color: white; overflow: hidden; opacity: 1; transition: opacity 1s; }',
+            ':host > div > div > small { display: block; position: absolute; top: 0; bottom: 0; width: 100%; height: 1em; line-height: 1em; margin: auto; text-align: center; }',
+        ].join('');
+        const wrapper = document.createElement('div');
+        const black1 = document.createElement('div');
+        black1.addEventListener('transitionend', () => {
+            wrapper.removeChild(black1);
+            wrapper.removeChild(logo);
+            wrapper.removeChild(black2);
+        });
+        wrapper.appendChild(black1);
+        const logo = this.addLogo();
+        logo.addEventListener('transitionend', () => { black1.style.opacity = '0'; });
+        wrapper.appendChild(logo);
+        const black2 = document.createElement('div');
+        black2.addEventListener('transitionend', () => { logo.style.opacity = '0'; });
+        wrapper.appendChild(black2);
+        wrapper.addEventListener('click', (event) => {
+            if (event.target !== wrapper) {
+                return;
+            }
+            const newEvent = new Event('play');
+            this.dispatchEvent(newEvent);
+        });
+        shadow.appendChild(style);
+        shadow.appendChild(wrapper);
+        setTimeout(() => { black2.style.opacity = '0'; }, 1000);
+    }
+    addLogo() {
+        const contents = document.createElement('div');
+        const small = document.createElement('small');
+        small.textContent = 'aaa';
+        contents.appendChild(small);
+        return contents;
+    }
 }
 class Main extends Page {
     init() {
@@ -275,8 +358,8 @@ class Button extends HTMLElement {
             ':host { --size: calc(100vmin / 3); display: block; position: absolute; margin: auto; width: fit-content; height: fit-content; transition: top 0.5s, bottom 0.5s, left 0.5s, right 0.5s; }',
             ':host > button { display: block; width: var( --size ); height: var( --size ); border-radius:50%; overflow: hidden; cursor: pointer; boxsizing: border-box; border: 0; outline: none; padding: 0; margin: 0; font-family: Icon; }',
             ':host > button:before { content: var( --icon, "" ); display: block; width: 100%; height: 100%; box-sizing: border-box; text-align: center; font-size: var( --fsize, 7vmin ); }',
-            ':host([mode="ok"]) > button:before { content: "○"; background-color: var( --back-color, #34ef6e ); }',
-            ':host([mode="cancel"]) > button:before { content: "×"; background-color: var( --back-color, #ff5252 ); }',
+            ':host([mode="ok"]) > button:before { content: "○"; background-color: var( --back, #34ef6e ); }',
+            ':host([mode="cancel"]) > button:before { content: "×"; background-color: var( --back, #ff5252 ); }',
         ]).join('');
         const button = document.createElement('button');
         button.addEventListener('click', (event) => {
@@ -314,17 +397,70 @@ class RightButton extends Button {
         return style;
     }
 }
+class DefaultButton extends HTMLElement {
+    constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        const style = document.createElement('style');
+        style.innerHTML = this.initStyle([
+            ':host { --bsize: var( --size, 50vmin); display: block; margin: 5vmin; width: fit-content; height: fit-content; }',
+            ':host > button { display: block; width: var( --bsize ); height: var( --bsize ); overflow: hidden; cursor: pointer; boxsizing: border-box; border: 0.5vmin solid var( --border, #f7f7f7 ); background-color: var( --back, #afb1de ); border-radius: 8%; outline: none; padding: 0; margin: 0; }',
+        ]).join('');
+        const button = document.createElement('button');
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const newEvent = document.createEvent('MouseEvent');
+            newEvent.initMouseEvent('click', event.bubbles, event.cancelable, event.view, event.detail, event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null);
+            this.dispatchEvent(newEvent);
+        });
+        const slot = document.createElement('slot');
+        button.appendChild(slot);
+        shadow.appendChild(style);
+        shadow.appendChild(button);
+    }
+    initStyle(style) { return style; }
+}
+class IconButton extends DefaultButton {
+    initStyle(style) {
+        style.push(':host > button { font-family: Icon; }');
+        return style;
+    }
+}
 document.addEventListener('DOMContentLoaded', () => {
     customElements.define('top-button', TopButton);
     customElements.define('bottom-button', BottomButton);
     customElements.define('left-button', LeftButton);
     customElements.define('right-button', RightButton);
+    customElements.define('def-button', DefaultButton);
+    customElements.define('icon-button', IconButton);
 });
 var ItemType;
 (function (ItemType) {
-    ItemType[ItemType["Item"] = 0] = "Item";
-    ItemType[ItemType["Food"] = 1] = "Food";
+    ItemType[ItemType["Unknown"] = 0] = "Unknown";
+    ItemType[ItemType["Item"] = 1] = "Item";
+    ItemType[ItemType["Food"] = 2] = "Food";
 })(ItemType || (ItemType = {}));
+class Item {
+    static init() {
+        this.items[0] = { id: 0, type: ItemType.Unknown, text: '' };
+    }
+    static convert(items) {
+        return items.map((item) => { return Object.assign({}, item, this.find(item)); });
+    }
+    static find(item) {
+        const id = typeof item === 'number' ? item : item.id;
+        for (let i = 1; i < this.length; ++i) {
+            if (this.items[i].id === id) {
+                return Object.assign({}, this.items[i]);
+            }
+        }
+        return Object.assign({}, this.items[0]);
+    }
+    static getAll() {
+        return this.items.map((item) => { return Object.assign({}, item); });
+    }
+}
+Item.items = [];
 class Modal extends HTMLElement {
     constructor() {
         super();
@@ -340,6 +476,7 @@ class Modal extends HTMLElement {
         ]).join('');
         const wrapper = document.createElement('div');
         wrapper.addEventListener('transitionend', (event) => {
+            event.stopPropagation();
             if (!this.hasAttribute('hide') || event.propertyName !== 'width') {
                 return;
             }
@@ -349,6 +486,7 @@ class Modal extends HTMLElement {
         wrapper.addEventListener('click', (event) => { event.stopPropagation(); });
         const contents = new Scroll();
         contents.addEventListener('transitionend', (event) => {
+            event.stopPropagation();
             if (event.propertyName !== 'width' && event.propertyName !== 'height') {
                 return;
             }
@@ -433,7 +571,7 @@ class Modal extends HTMLElement {
 }
 class Popup extends Modal {
     initStyle(style) {
-        style.push(':host { z-index: var( --z-index, 2100000000 ) }', ':host > div > scroll-area { width: 60%; height: 0; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; left: 0; right: 0; }', ':host( [ hide ] ) > div > scroll-area { transition: height 0.5s, padding 0.5s; }', ':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { height: 100%; padding: 5vmin 0; }');
+        style.push(':host { z-index: var( --z-index, 2100000000 ) }', ':host > div > scroll-area { width: 60%; height: 0; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; left: 0; right: 0; }', ':host( [ hide ] ) > div > scroll-area { transition: height 0.5s, padding 0.5s; text-align: center; }', ':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { height: 100%; padding: 5vmin 0; }');
         return style;
     }
     initContents() {
@@ -539,8 +677,8 @@ class User {
     }
     getRuf() { return null; }
     getItems() {
-        const items = [{ type: ItemType.Food }, { type: ItemType.Item }, { type: ItemType.Food }, { type: ItemType.Item }, { type: ItemType.Item }];
-        return items;
+        const items = [{ id: 1, count: 1 }];
+        return Item.convert(items);
     }
 }
 class Ruf {
@@ -620,7 +758,7 @@ class LanguageManager {
     }
     addStyle() {
         const style = document.createElement('style');
-        style.innerHTML = this.lang.get().map((l) => { return 'body[lang="' + l + '"] button[lang="' + l + '"]{background-color:var(--choose-language);}'; }).join('');
+        style.innerHTML = this.lang.get().map((l) => { return 'body[lang="' + l + '"] def-button[lang="' + l + '"]{--back:var(--choose-language);}'; }).join('');
         document.head.appendChild(style);
     }
     initObserver() {
@@ -632,7 +770,7 @@ class LanguageManager {
     openChooseLanguage() {
         const contents = document.createElement('div');
         this.lang.get().forEach((lang) => {
-            const button = document.createElement('button');
+            const button = new DefaultButton();
             button.textContent = lang;
             button.lang = lang;
             button.addEventListener('click', () => { this.setLanguage(lang); });
@@ -657,14 +795,23 @@ class App {
         this.initPages();
         this.user = new User();
         if (this.user.getRuf()) {
-            this.config.page.egg.hide();
+            this.config.page.main.show();
+        }
+        else {
+            this.config.page.top.show();
+        }
+    }
+    showMypage() {
+        if (this.user.getRuf()) {
+            this.goTo('main');
         }
         else {
             this.config.page.egg.setUser(this.user);
-            setTimeout(() => { this.config.page.egg.show(); }, 500);
+            this.goTo('egg');
         }
     }
     initPages() {
+        customElements.define('page-top', Top);
         customElements.define('page-main', Main);
         customElements.define('page-egg', Egg);
         Object.keys(this.config.page).forEach((key) => {
@@ -691,6 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dialog: document.getElementById('dialog'),
         message: document.getElementById('message'),
         page: {
+            top: document.querySelector('page-top'),
             main: document.querySelector('page-main'),
             egg: document.querySelector('page-egg'),
         },
