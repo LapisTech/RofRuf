@@ -12,7 +12,7 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link rel="apple-touch-icon" sizes="152x152" href="./apple-touch-icon-precomposed.png?1">
 	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP" rel="stylesheet">
-	<style type="text/css">@font-face{font-family:'Icon';src:url(./icon.ttf);}*{box-sizing:border-box;}body,*:before,*:after{font-family:'Noto Sans JP',sans-serif;}html{height:100%;}body{margin:0;padding::0;height:100%;overflow:hidden;position:relative;background-color:#4a4e5e;}img{image-rendering:crisp-edges;border:0;}menu-item{width:30vmin;}</style>
+	<style type="text/css">@font-face{font-family:'Icon';src:url(./icon.ttf);}:root{--choose-language:gray;}*{box-sizing:border-box;}body,*:before,*:after{font-family:'Noto Sans JP',sans-serif;}html{height:100%;}body{margin:0;padding:0;height:100%;overflow:hidden;position:relative;background-color:#4a4e5e;}img{image-rendering:crisp-edges;border:0;}button{box-sizing:border-box;display:block;border: 0.5vmin solid var(--border,#f7f7f7);background-color: var(--color,#afb1de);border-radius:8%;outline:none;}dialog-window button{width:50vmin;height:50vmin;margin:0 5vmin;}.icon{font-family:Icon;}dialog-window > div{flex-flow:row nowrap;justify-content:flex-start;align-items:center;display:flex;}</style>
 <style type="text/css">
 .hatch{ text-align: center; }
 .hatch:after { content: '🥚→🐣'; display: block; line-height: 30vmin; }
@@ -23,19 +23,25 @@
 <body>
 	<page-main>
 		<top-menu style="--icon:'▽'"></top-menu>
-		<bottom-menu></bottom-menu>
-		<left-menu></left-menu>
-		<right-menu></right-menu>
+		<bottom-menu style="--icon:'⭐'"></bottom-menu>
+		<left-menu style="--icon:'⚙'">
+			<menu-item class="lang"></menu-item>
+			<menu-item class="login"><span class="icon">🚪</span></menu-item>
+		</left-menu>
+		<right-menu style="--icon:'📦'"></right-menu>
 	</page-main>
 	<page-egg>
 		<bottom-button style="--icon:'🥚'"></bottom-button>
 		<left-menu style="--icon:'⚙'">
-			<menu-item quantity="100">test1</menu-item>
+			<menu-item class="lang"></menu-item>
+			<menu-item class="login"><span class="icon">🚪</span></menu-item>
+		</left-menu>
+		<right-menu style="--icon:'📦'">
+			<!--<menu-item quantity="100">test1</menu-item>
 			<menu-item disabled>test2</menu-item>
 			<menu-item quantity="0">test3</menu-item>
-			<menu-item selected>test4</menu-item>
-		</left-menu>
-		<right-menu style="--icon:'📦'"></right-menu>
+			<menu-item selected>test4</menu-item>-->
+		</right-menu>
 	</page-egg>
 	<popup-window id="popup"></popup-window>
 	<dialog-window id="dialog"></dialog-window>

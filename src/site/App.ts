@@ -27,6 +27,10 @@ interface AppConfig
 	dialog: Dialog,
 	message: Message,
 	page: AppPage,//{ [ K in keyof AppPage ]: HTMLElement },
+	menu:
+	{
+		lang: NodeListOf<HTMLElement>,
+	},
 }
 
 class Language
@@ -39,10 +43,11 @@ class Language
 	constructor( select?: HTMLSelectElement )
 	{
 		this.langs = [];
+
 		const list: string[] = [];
 		if ( navigator.languages ) { navigator.languages.forEach( ( lang ) => { list.push( lang ); } ); }
 		if ( list.indexOf( Language.DEFAULT ) < 0 ) { list.push( Language.DEFAULT ); }
-console.log( 'Language list:', list );
+
 		const load = ( index: number ) =>
 		{
 			if ( list.length <= index ) { this.setEnableLanguage( select ); return; }
@@ -88,16 +93,92 @@ console.log( 'Language list:', list );
 	public setLanguage( language: string ) { document.body.lang = language; }
 }
 
+class LanguageManager
+{
+	private lang: Language;
+	private targets: NodeListOf<HTMLElement>;
+	private modal: Modal;
+
+	constructor( targets: NodeListOf<HTMLElement>, modal: Modal )
+	{
+		this.lang = new Language();
+		this.targets = targets;
+		this.modal = modal;
+
+		if ( document.body.lang )
+		{
+			this.addStyle();
+			this.initObserver();
+		} else
+		{
+			const observer = new MutationObserver( ( records ) =>
+			{
+				observer.disconnect();
+				this.addStyle();
+				this.setLanguage( document.body.lang );
+				this.initObserver();
+			} );
+			observer.observe( document.body, { attributes: true, attributeFilter: [ 'lang' ] } );
+		}
+
+		targets.forEach( ( target ) =>
+		{
+			target.addEventListener( 'click', () => { this.openChooseLanguage(); } );
+		} );
+	}
+
+	private addStyle()
+	{
+		const style = document.createElement( 'style' );
+		style.innerHTML = this.lang.get().map( ( l ) => { return 'body[lang="' + l + '"] button[lang="' + l + '"]{background-color:var(--choose-language);}'; } ).join( '' );
+		document.head.appendChild( style );
+	}
+
+	private initObserver()
+	{
+		const observer = new MutationObserver( ( records ) =>
+		{
+			this.setLanguage( document.body.lang );
+		} );
+		observer.observe( document.body, { attributes: true, attributeFilter: [ 'lang' ] } );
+	}
+
+	public openChooseLanguage()
+	{
+
+		const contents = document.createElement( 'div' );
+		this.lang.get().forEach( ( lang ) =>
+		{
+			const button = document.createElement( 'button' );
+			button.textContent = lang;
+			button.lang = lang;
+			button.addEventListener( 'click', () => { this.setLanguage( lang ); } );
+			contents.appendChild( button );
+		} );
+
+		this.modal.enableOK( () => { return false; } );
+		this.modal.clear();
+		this.modal.appendChild( contents );
+		this.modal.show();
+	}
+
+	public setLanguage( lang: string )
+	{
+		if ( document.body.lang !== lang ) { this.lang.setLanguage( lang ); }
+		this.targets.forEach( ( target ) => { target.textContent = lang; } );
+	}
+}
+
 class App
 {
 	private config: AppConfig;
-	private lang: Language;
+	private lang: LanguageManager;
 	private user: User;
 
 	constructor( config: AppConfig )
 	{
 		this.config = config;
-		this.lang = new Language();
+		this.lang = new LanguageManager( config.menu.lang, config.dialog );
 		this.initPages();
 
 		this.user = new User();

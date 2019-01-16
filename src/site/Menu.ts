@@ -40,7 +40,7 @@ class Menu extends HTMLElement
 		} );
 		this.parent.appendChild( button );
 
-		const wrapper = new Scroll();//document.createElement( 'div' );
+		const wrapper = new Scroll();
 		const contents = document.createElement( 'div' );
 		const slot = document.createElement( 'slot' );
 		contents.appendChild( slot );
@@ -126,7 +126,7 @@ class LeftMenu extends Menu
 			':host > div > button:before { padding-left: 50%; line-height: var( --size ); }',
 			':host > div > button:after { padding-right: 50%; line-height: var( --size ); }',
 			':host > div > scroll-area { overflow-x: auto; }',
-			':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; }'
+			':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; flex-wrap: nowrap; align-items: center; }'
 		);
 		return style;
 	}
@@ -145,7 +145,7 @@ class RightMenu extends Menu
 			':host > div > button:before { padding-right: 50%; line-height: var( --size ); }',
 			':host > div > button:after { padding-left: 50%; line-height: var( --size ); }',
 			':host > div > scroll-area { overflow-x: auto; }',
-			':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; }'
+			':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; flex-wrap: nowrap; align-items: center; }'
 		);
 		return style;
 	}
@@ -163,7 +163,7 @@ class MenuItem extends HTMLElement
 
 		const style = document.createElement( 'style' );
 		style.innerHTML = this.initStyle( [
-			':host { display: block; height: fit-content; }',
+			':host { display: block; width:30vmin; height: fit-content; }',
 			':host > div { width: 100%; padding-top: 100%; position: relative; overflow: hidden; }',
 			':host > div > button { position: absolute; width: 95%; height: 95%; margin: auto; top: 0; bottom: 0; left: 0; right: 0; display: block; box-sizing: border-box; border-radius: 8%; overflow: hidden; cursor: pointer; border: 0.5vmin solid var( --border, #f7f7f7 ); background-color: var( --color, #afb1de ); }',
 			':host > div > span { background-color: #e7e8f3; position: absolute; top: 0; right: 0; display: block; text-align: center; border-radius: 50%; font-size: 4vmin; width: 8vmin; height: 8vmin; line-height: 8vmin; }',
@@ -209,7 +209,7 @@ class MenuItem extends HTMLElement
 	{
 		const count = Math.floor( ( typeof value === 'number' ? value : parseInt( value ) ) || 0 );
 		if ( count <= 0 ) { this.count.textContent = ''; return; }
-		this.count.textContent = count < 100 ? count + '' : '+99';
+		this.count.textContent = count < 100 ? count + '' : '99+';
 	}
 }
 

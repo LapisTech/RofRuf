@@ -12,5 +12,9 @@ document.addEventListener( 'DOMContentLoaded', () =>
 			main: <Main>document.querySelector( 'page-main' ),
 			egg: <Egg>document.querySelector( 'page-egg' ),
 		},
+		menu:
+		{
+			lang: document.querySelectorAll( '.lang' ),
+		},
 	} );
 } );

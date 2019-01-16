@@ -201,13 +201,13 @@ class BottomMenu extends Menu {
 }
 class LeftMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { left: 0; }', ':host { top: 0; bottom: 0; left: 0; height: var( --size ); }', ':host > div { left: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; right: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; left: 0; }', ':host > div > button:before { padding-left: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-right: 50%; line-height: var( --size ); }', ':host > div > scroll-area { overflow-x: auto; }', ':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; }');
+        style.push(':host-context( .on ) > div { left: 0; }', ':host { top: 0; bottom: 0; left: 0; height: var( --size ); }', ':host > div { left: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; right: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; left: 0; }', ':host > div > button:before { padding-left: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-right: 50%; line-height: var( --size ); }', ':host > div > scroll-area { overflow-x: auto; }', ':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: fit-content; height: 100%; flex-wrap: nowrap; align-items: center; }');
         return style;
     }
 }
 class RightMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { right: 0; }', ':host { top: 0; bottom: 0; right: 0; height: var( --size ); }', ':host > div { right: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; left: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; right: 0; }', ':host > div > button:before { padding-right: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-left: 50%; line-height: var( --size ); }', ':host > div > scroll-area { overflow-x: auto; }', ':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; }');
+        style.push(':host-context( .on ) > div { right: 0; }', ':host { top: 0; bottom: 0; right: 0; height: var( --size ); }', ':host > div { right: calc( var( --size ) / -2 ); width: 0; height: 100%; }', ':host > div > button { top: 0; left: calc( var( --size ) / -2 ); }', ':host > div.show { width: 100vmin; right: 0; }', ':host > div > button:before { padding-right: 50%; line-height: var( --size ); }', ':host > div > button:after { padding-left: 50%; line-height: var( --size ); }', ':host > div > scroll-area { overflow-x: auto; }', ':host > div > scroll-area > div { padding: 0 calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: fit-content; height: 100%; flex-wrap: nowrap; align-items: center; }');
         return style;
     }
 }
@@ -217,7 +217,7 @@ class MenuItem extends HTMLElement {
         const shadow = this.attachShadow({ mode: 'open' });
         const style = document.createElement('style');
         style.innerHTML = this.initStyle([
-            ':host { display: block; height: fit-content; }',
+            ':host { display: block; width:30vmin; height: fit-content; }',
             ':host > div { width: 100%; padding-top: 100%; position: relative; overflow: hidden; }',
             ':host > div > button { position: absolute; width: 95%; height: 95%; margin: auto; top: 0; bottom: 0; left: 0; right: 0; display: block; box-sizing: border-box; border-radius: 8%; overflow: hidden; cursor: pointer; border: 0.5vmin solid var( --border, #f7f7f7 ); background-color: var( --color, #afb1de ); }',
             ':host > div > span { background-color: #e7e8f3; position: absolute; top: 0; right: 0; display: block; text-align: center; border-radius: 50%; font-size: 4vmin; width: 8vmin; height: 8vmin; line-height: 8vmin; }',
@@ -256,7 +256,7 @@ class MenuItem extends HTMLElement {
             this.count.textContent = '';
             return;
         }
-        this.count.textContent = count < 100 ? count + '' : '+99';
+        this.count.textContent = count < 100 ? count + '' : '99+';
     }
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -336,7 +336,7 @@ class Modal extends HTMLElement {
             ':host > div { transition: width 0.5s, height 0.5s; margin: auto; width: 0; height: 0; position: absolute; top: 0; bottom: 0; left: 0; right: 0; border-radius: 50%; overflow: hidden; background-color: rgba( 0, 0, 0, 0.6 ); }',
             ':host( [ show ]:not( [ hide] ) ) > div { width: 100%; height: 100%; }',
             ':host( [ hide ] ) > div { transition: width 0.5s ease 0.5s, height 0.5s ease 0.5s; }',
-            ':host > div > scroll-area { margin: auto; box-sizing: border-box; padding: 0; position: absolute; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; background-color: #57575f; }',
+            ':host > div > scroll-area { margin: auto; box-sizing: border-box; padding: 0; position: absolute; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; background-color: #57575f; display: flex; }',
         ]).join('');
         const wrapper = document.createElement('div');
         wrapper.addEventListener('transitionend', (event) => {
@@ -361,7 +361,7 @@ class Modal extends HTMLElement {
         wrapper.appendChild(contents);
         const slot = document.createElement('slot');
         contents.appendChild(slot);
-        this.initContents();
+        this.initContents(wrapper);
         this.cbutton.setAttribute('mode', 'cancel');
         this.cbutton.addEventListener('click', () => { if (!this.onCancel || !this.onCancel()) {
             this.hide();
@@ -374,9 +374,19 @@ class Modal extends HTMLElement {
         wrapper.appendChild(this.obutton);
         shadow.appendChild(style);
         shadow.appendChild(wrapper);
+        if (this.tagName === 'DIALOG-WINDOW') {
+            contents.addEventListener('mousewheel', (event) => {
+                if (event.deltaX !== 0) {
+                    return;
+                }
+                event.stopPropagation();
+                event.preventDefault();
+                contents.scrollBy(event.deltaY, 0);
+            });
+        }
     }
     initStyle(style) { return style; }
-    initContents() { }
+    initContents(wrapper) { }
     clear() {
         const c = this.children;
         for (let i = c.length - 1; 0 <= i; --i) {
@@ -445,10 +455,10 @@ class Popup extends Modal {
 }
 class Dialog extends Modal {
     initStyle(style) {
-        style.push(':host { z-index: var( --z-index, 2100000050 ) }', ':host > div > scroll-area { width: 0; height: 60%; transition: width 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; bottom: 0; left: 0; }', ':host( [ hide ] ) > div > scroll-area { transition: width 0.5s, padding 0.5s; }', ':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { width: 100%; padding: 0 5vmin; }');
+        style.push(':host { z-index: var( --z-index, 2100000050 ) }', ':host > div > scroll-area { width: 0; height: 60%; transition: width 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; bottom: 0; left: 0; overflow-x: auto; }', ':host( [ hide ] ) > div > scroll-area { transition: width 0.5s, padding 0.5s; }', ':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { width: 100%; padding: 0 5vmin; }');
         return style;
     }
-    initContents() {
+    initContents(wrapper) {
         this.cbutton = new TopButton();
         this.obutton = new BottomButton();
     }
@@ -547,7 +557,6 @@ class Language {
         if (list.indexOf(Language.DEFAULT) < 0) {
             list.push(Language.DEFAULT);
         }
-        console.log('Language list:', list);
         const load = (index) => {
             if (list.length <= index) {
                 this.setEnableLanguage(select);
@@ -587,10 +596,64 @@ class Language {
 Language.DEFAULT = 'en';
 Language.PATH = './lang/';
 Language.SUFFIX = '';
+class LanguageManager {
+    constructor(targets, modal) {
+        this.lang = new Language();
+        this.targets = targets;
+        this.modal = modal;
+        if (document.body.lang) {
+            this.addStyle();
+            this.initObserver();
+        }
+        else {
+            const observer = new MutationObserver((records) => {
+                observer.disconnect();
+                this.addStyle();
+                this.setLanguage(document.body.lang);
+                this.initObserver();
+            });
+            observer.observe(document.body, { attributes: true, attributeFilter: ['lang'] });
+        }
+        targets.forEach((target) => {
+            target.addEventListener('click', () => { this.openChooseLanguage(); });
+        });
+    }
+    addStyle() {
+        const style = document.createElement('style');
+        style.innerHTML = this.lang.get().map((l) => { return 'body[lang="' + l + '"] button[lang="' + l + '"]{background-color:var(--choose-language);}'; }).join('');
+        document.head.appendChild(style);
+    }
+    initObserver() {
+        const observer = new MutationObserver((records) => {
+            this.setLanguage(document.body.lang);
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['lang'] });
+    }
+    openChooseLanguage() {
+        const contents = document.createElement('div');
+        this.lang.get().forEach((lang) => {
+            const button = document.createElement('button');
+            button.textContent = lang;
+            button.lang = lang;
+            button.addEventListener('click', () => { this.setLanguage(lang); });
+            contents.appendChild(button);
+        });
+        this.modal.enableOK(() => { return false; });
+        this.modal.clear();
+        this.modal.appendChild(contents);
+        this.modal.show();
+    }
+    setLanguage(lang) {
+        if (document.body.lang !== lang) {
+            this.lang.setLanguage(lang);
+        }
+        this.targets.forEach((target) => { target.textContent = lang; });
+    }
+}
 class App {
     constructor(config) {
         this.config = config;
-        this.lang = new Language();
+        this.lang = new LanguageManager(config.menu.lang, config.dialog);
         this.initPages();
         this.user = new User();
         if (this.user.getRuf()) {
@@ -630,6 +693,9 @@ document.addEventListener('DOMContentLoaded', () => {
         page: {
             main: document.querySelector('page-main'),
             egg: document.querySelector('page-egg'),
+        },
+        menu: {
+            lang: document.querySelectorAll('.lang'),
         },
     });
 });

@@ -20,7 +20,7 @@ class Modal extends HTMLElement
 			':host > div { transition: width 0.5s, height 0.5s; margin: auto; width: 0; height: 0; position: absolute; top: 0; bottom: 0; left: 0; right: 0; border-radius: 50%; overflow: hidden; background-color: rgba( 0, 0, 0, 0.6 ); }',
 			':host( [ show ]:not( [ hide] ) ) > div { width: 100%; height: 100%; }',
 			':host( [ hide ] ) > div { transition: width 0.5s ease 0.5s, height 0.5s ease 0.5s; }',
-			':host > div > scroll-area { margin: auto; box-sizing: border-box; padding: 0; position: absolute; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; background-color: #57575f; }',
+			':host > div > scroll-area { margin: auto; box-sizing: border-box; padding: 0; position: absolute; transition: height 0.5s ease 0.5s, padding 0.5s ease 0.5s; background-color: #57575f; display: flex; }',
 		] ).join( '' );
 
 		const wrapper = document.createElement( 'div' );
@@ -46,7 +46,7 @@ class Modal extends HTMLElement
 		const slot = document.createElement( 'slot' );
 		contents.appendChild( slot );
 
-		this.initContents();
+		this.initContents( wrapper );
 
 		this.cbutton.setAttribute( 'mode', 'cancel' );
 		this.cbutton.addEventListener( 'click', () => { if ( !this.onCancel || !this.onCancel() ) { this.hide(); } } );
@@ -58,11 +58,22 @@ class Modal extends HTMLElement
 
 		shadow.appendChild( style );
 		shadow.appendChild( wrapper );
+
+		if ( this.tagName === 'DIALOG-WINDOW' )
+		{
+			contents.addEventListener( 'mousewheel', ( event: WheelEvent ) =>
+			{
+				if ( event.deltaX !== 0) { return; }
+				event.stopPropagation();
+				event.preventDefault();
+				contents.scrollBy( event.deltaY, 0 );
+			} );
+		}
 	}
 
 	protected initStyle( style: string[] ) { return style; }
 
-	protected initContents(){}
+	protected initContents( wrapper: HTMLElement ){}
 
 	public clear()
 	{
@@ -150,14 +161,14 @@ class Dialog extends Modal
 	{
 		style.push(
 			':host { z-index: var( --z-index, 2100000050 ) }',
-			':host > div > scroll-area { width: 0; height: 60%; transition: width 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; bottom: 0; left: 0; }',
+			':host > div > scroll-area { width: 0; height: 60%; transition: width 0.5s ease 0.5s, padding 0.5s ease 0.5s; top: 0; bottom: 0; left: 0; overflow-x: auto; }',
 			':host( [ hide ] ) > div > scroll-area { transition: width 0.5s, padding 0.5s; }',
-			':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { width: 100%; padding: 0 5vmin; }'
+			':host( [ show ]:not( [ hide ] ) ) > div > scroll-area { width: 100%; padding: 0 5vmin; }',
 		);
 		return style;
 	}
 
-	protected initContents()
+	protected initContents( wrapper: HTMLElement  )
 	{
 		this.cbutton = new TopButton();
 		this.obutton = new BottomButton();
