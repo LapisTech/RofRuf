@@ -26,7 +26,13 @@ class Item
 
 	public static init()
 	{
+		this.initItemData();
+	}
+
+	private static initItemData()
+	{
 		this.items[ 0 ] = { id: 0, type: ItemType.Unknown, text: '' };
+		//this.items.push( { id: , type: ItemType., text: '' } );
 	}
 
 	public static convert( items: UserItem[] )

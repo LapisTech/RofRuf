@@ -75,12 +75,14 @@ class Egg extends Page
 
 	public setUser( user: User )
 	{
-		user.getItems().filter( ( item ) => { return item.type === ItemType.Item; } ).forEach( ( item ) =>
+		return user.getItems().then( ( items ) =>
 		{
-			const mitem = new MenuItem();
-			mitem.addEventListener( 'click', ( event ) => { this.selectItem( mitem ); } );
-			this.itemmenu.appendChild( mitem );
+			items.filter( ( item ) => { return item.type === ItemType.Item; } ).forEach( ( item ) =>
+			{
+				const mitem = new MenuItem();
+				mitem.addEventListener( 'click', ( event ) => { this.selectItem( mitem ); } );
+				this.itemmenu.appendChild( mitem );
+			} );
 		} );
-
 	}
 }

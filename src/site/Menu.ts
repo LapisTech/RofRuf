@@ -88,7 +88,7 @@ class TopMenu extends Menu
 			':host > div > button:before { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }',
 			':host > div > button:after { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }',
 			':host > div > scroll-area { overflow-y: auto; }',
-			':host > div > scroll-area > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; }'
+			':host > div > scroll-area > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; flex-direction: column; flex-wrap: wrap; align-items: center; }'
 		);
 		return style;
 	}
@@ -107,7 +107,7 @@ class BottomMenu extends Menu
 			':host > div > button:before { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }',
 			':host > div > button:after { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }',
 			':host > div > scroll-area { overflow-y: auto; }',
-			':host > div > scroll-area > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; }'
+			':host > div > scroll-area > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; flex-direction: column; flex-wrap: wrap; align-items: center; }'
 		);
 		return style;
 	}

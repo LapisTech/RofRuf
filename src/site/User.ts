@@ -1,16 +1,17 @@
 
 class User
 {
-	constructor()
+	private db: DB;
+
+	constructor( db:DB )
 	{
+		this.db = db;
 	}
 
-	public getRuf(): Ruf|null { return null; }
+	public getRuf(): Ruf|null { return this.db.getRuf(); }
 
 	public getItems()
 	{
-		const items: UserItem[] = [ { id: 1, count: 1 } ];
-
-		return Item.convert( items );
+		return this.db.getItems().then( ( items ) => { return Item.convert( items ); } );
 	}
 }

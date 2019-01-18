@@ -111,7 +111,7 @@ class TitleScreen extends HTMLElement {
         });
         shadow.appendChild(style);
         shadow.appendChild(wrapper);
-        setTimeout(() => { black2.style.opacity = '0'; }, 1000);
+        setTimeout(() => { black1.style.opacity = '0'; }, 1000);
     }
     addLogo() {
         const contents = document.createElement('div');
@@ -182,10 +182,12 @@ class Egg extends Page {
         }
     }
     setUser(user) {
-        user.getItems().filter((item) => { return item.type === ItemType.Item; }).forEach((item) => {
-            const mitem = new MenuItem();
-            mitem.addEventListener('click', (event) => { this.selectItem(mitem); });
-            this.itemmenu.appendChild(mitem);
+        return user.getItems().then((items) => {
+            items.filter((item) => { return item.type === ItemType.Item; }).forEach((item) => {
+                const mitem = new MenuItem();
+                mitem.addEventListener('click', (event) => { this.selectItem(mitem); });
+                this.itemmenu.appendChild(mitem);
+            });
         });
     }
 }
@@ -272,13 +274,13 @@ class Menu extends HTMLElement {
 }
 class TopMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { top: 0; }', ':host { left: 0; right: 0; top: 0; width: var( --size ); }', ':host > div { top: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; bottom: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; top: 0; }', ':host > div > button:before { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > scroll-area { overflow-y: auto; }', ':host > div > scroll-area > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; }');
+        style.push(':host-context( .on ) > div { top: 0; }', ':host { left: 0; right: 0; top: 0; width: var( --size ); }', ':host > div { top: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; bottom: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; top: 0; }', ':host > div > button:before { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > scroll-area { overflow-y: auto; }', ':host > div > scroll-area > div { padding: calc( var( --size ) / 4 ) 0 calc( var( --size ) / 2 ); width: 100%; height: fit-content; flex-direction: column; flex-wrap: wrap; align-items: center; }');
         return style;
     }
 }
 class BottomMenu extends Menu {
     initStyle(style) {
-        style.push(':host-context( .on ) > div { bottom: 0; }', ':host { left: 0; right: 0; bottom: 0; width: var( --size ); }', ':host > div { bottom: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; top: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; bottom: 0; }', ':host > div > button:before { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > scroll-area { overflow-y: auto; }', ':host > div > scroll-area > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; }');
+        style.push(':host-context( .on ) > div { bottom: 0; }', ':host { left: 0; right: 0; bottom: 0; width: var( --size ); }', ':host > div { bottom: calc( var( --size ) / -2 ); height: 0; width: 100%; }', ':host > div > button { left: 0; top: calc( var( --size ) / -2 ); }', ':host > div.show { height: 100vmin; bottom: 0; }', ':host > div > button:before { padding-bottom: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > button:after { padding-top: 50%; line-height: calc( var( --size ) / 2 ); }', ':host > div > scroll-area { overflow-y: auto; }', ':host > div > scroll-area > div { padding: calc( var( --size ) / 2 ) 0 calc( var( --size ) / 4 ); width: 100%; height: fit-content; flex-direction: column; flex-wrap: wrap; align-items: center; }');
         return style;
     }
 }
@@ -442,6 +444,9 @@ var ItemType;
 })(ItemType || (ItemType = {}));
 class Item {
     static init() {
+        this.initItemData();
+    }
+    static initItemData() {
         this.items[0] = { id: 0, type: ItemType.Unknown, text: '' };
     }
     static convert(items) {
@@ -672,13 +677,145 @@ class Message extends HTMLElement {
 document.addEventListener('DOMContentLoaded', () => {
     customElements.define('system-message', Message);
 });
-class User {
+class TextIcon extends HTMLElement {
     constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        const style = document.createElement('style');
+        style.innerHTML = [
+            ':host { font-family: Icon; }',
+        ].join('');
+        shadow.appendChild(style);
+        shadow.appendChild(document.createElement('slot'));
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    customElements.define('text-icon', TextIcon);
+});
+class DB extends EventTarget {
+    constructor() {
+        super();
+        this.storage = localStorage;
+    }
+    reset(version) {
+        return new Promise((resolve, reject) => {
+            this.db.close();
+            const request = indexedDB.deleteDatabase(document.domain || 'rofruf.local');
+            request.onerror = (event) => { reject(event); };
+            request.onblocked = (event) => { reject(event); };
+            request.onsuccess = (event) => { resolve(event); };
+        }).then(() => { return this.connect(version); });
+    }
+    connect(version) {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(document.domain || 'rofruf.local', version);
+            request.onblocked = (event) => { reject(event); };
+            request.onupgradeneeded = (event) => {
+                this.db = request.result;
+                this.db.onerror = (event) => { reject(event); };
+                this.db.onabort = (event) => { reject(event); };
+                this.createObjectStore();
+            };
+            request.onsuccess = (event) => {
+                this.db = request.result;
+                console.log('onsuccess', event, this.db.version);
+                if (this.db.version !== DB.VERSION) {
+                    this.db.close();
+                    return reject('DB old.');
+                }
+                this.db.onerror = (event) => { this.dispatchEvent(event); };
+                this.db.onabort = (event) => { this.dispatchEvent(event); };
+                resolve({});
+            };
+            request.onerror = (event) => { console.log('onerror', event); reject(event); };
+        }).catch((error) => {
+            if (error !== 'DB old.') {
+                throw error;
+            }
+            return this.connect(DB.VERSION);
+        });
+    }
+    createObjectStore() {
+        console.log('PrevVer:', this.db.version);
+        for (let i = this.db.version || 1; i <= DB.VERSION; ++i) {
+            const db = this.createVersionDB(i);
+            db.convertFromPrev();
+            db.createStores();
+        }
+    }
+    createVersionDB(version) {
+        switch (version) {
+            case 1: return new DBv1(this.db);
+        }
+        return new DBvI(this.db);
+    }
+    getItems() {
+        return new Promise((resolve, reject) => {
+            const store = this.db.transaction('items', 'readonly').objectStore('items');
+            const request = store.getAll();
+            request.onerror = (event) => { reject(event); };
+            request.onsuccess = (event) => {
+                resolve(request.result.map((data) => { return { id: data.id, count: data.count }; }));
+            };
+        });
+    }
+    useItem(id) {
+        return new Promise((resolve, reject) => {
+            const store = this.db.transaction('items', 'readwrite').objectStore('items');
+            const request = store.get('id');
+            request.onerror = (event) => { reject(event); };
+            request.onsuccess = (event) => {
+                const data = { id: id, count: request.result.count - 1 };
+                if (data.count < 0) {
+                    return reject(new Error('Do not have item.'));
+                }
+                const request2 = store.put(data);
+                request2.onerror = (event) => { reject(event); };
+                request2.onsuccess = (event) => {
+                    resolve({ id: data.id, count: data.count });
+                };
+            };
+        });
+    }
+    addItem(id, count = 1) {
+        return new Promise((resolve, reject) => {
+            const store = this.db.transaction('items', 'readwrite').objectStore('items');
+            const request = store.get(id);
+            request.onerror = (event) => { update(count); };
+            request.onsuccess = (event) => { const now = request.result ? request.result.count : 0; update(now + count); };
+            const update = (count) => {
+                const data = { id: id, count: count };
+                const request = store.put(data);
+                request.onerror = (event) => { reject(event); };
+                request.onsuccess = (event) => {
+                    resolve({ id: data.id, count: data.count });
+                };
+            };
+        });
+    }
+}
+DB.VERSION = 1;
+class DBvI {
+    constructor(db) { this.db = db; }
+    createStores() { }
+    convertFromPrev() { }
+    createStore(name, keyPath, autoIncrement = false) {
+        console.log('createObjectStore', name, keyPath, autoIncrement);
+        return this.db.createObjectStore(name, { keyPath: keyPath, autoIncrement: autoIncrement });
+    }
+}
+class DBv1 extends DBvI {
+    createStores() {
+        const items = this.createStore('items', 'id');
+    }
+}
+class User {
+    constructor(db) {
+        this.db = db;
     }
     getRuf() { return null; }
     getItems() {
-        const items = [{ id: 1, count: 1 }];
-        return Item.convert(items);
+        return this.db.getItems().then((items) => { return Item.convert(items); });
     }
 }
 class Ruf {
@@ -793,7 +930,13 @@ class App {
         this.config = config;
         this.lang = new LanguageManager(config.menu.lang, config.dialog);
         this.initPages();
-        this.user = new User();
+        this.db = new DB();
+        this.db.addEventListener('abort', (error) => { console.log(error); });
+        this.db.addEventListener('error', (error) => { console.log(error); });
+        this.db.connect().then(() => { this.init(); }).catch((error) => { console.log(error); });
+    }
+    init() {
+        this.user = new User(this.db);
         if (this.user.getRuf()) {
             this.config.page.main.show();
         }
@@ -806,8 +949,9 @@ class App {
             this.goTo('main');
         }
         else {
-            this.config.page.egg.setUser(this.user);
-            this.goTo('egg');
+            this.config.page.egg.setUser(this.user).then(() => {
+                this.goTo('egg');
+            });
         }
     }
     initPages() {

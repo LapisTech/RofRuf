@@ -55,10 +55,10 @@ wrapper.addEventListener( 'click', ( event ) =>
 	const newEvent = new Event( 'play' );
 	this.dispatchEvent( newEvent );
 } );
-
 		shadow.appendChild( style );
 		shadow.appendChild( wrapper );
-		setTimeout( () => { black2.style.opacity = '0'; }, 1000 );
+		//setTimeout( () => { black2.style.opacity = '0'; }, 1000 );
+setTimeout( () => { black1.style.opacity = '0'; }, 1000 );
 	}
 
 	private addLogo()

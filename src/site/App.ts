@@ -14,8 +14,10 @@
 /// <reference path="./Item.ts" />
 /// <reference path="./Modal.ts" />
 /// <reference path="./Message.ts" />
+/// <reference path="./Icon.ts" />
 
 // Data
+/// <reference path="./DB.ts" />
 /// <reference path="./User.ts" />
 /// <reference path="./Ruf.ts" />
 
@@ -178,6 +180,7 @@ class App
 {
 	private config: AppConfig;
 	private lang: LanguageManager;
+	private db: DB;
 	private user: User;
 
 	constructor( config: AppConfig )
@@ -186,8 +189,19 @@ class App
 		this.lang = new LanguageManager( config.menu.lang, config.dialog );
 		this.initPages();
 
-		this.user = new User();
+		this.db = new DB();
+		this.db.addEventListener( 'abort', (error) => { console.log( error ); } );
+		this.db.addEventListener( 'error', (error) => { console.log( error ); } );
 
+		this.db.connect().then( () => { this.init(); } ).catch( ( error ) => { console.log( error ); } );
+	}
+
+	private init()
+	{
+		this.user = new User( this.db );
+//this.db.addItem(1,2).then( ()=>{return this.db.getItems();} ).then((e)=>{console.log(e);}).catch((e)=>{console.log(e);});
+//this.db.reset().then( ()=>{return this.db.getItems();} ).then((e)=>{console.log(e);}).catch((e)=>{console.log(e);});
+//this.db.getItems().then( (items) =>{console.log(items);} );
 		if ( this.user.getRuf() )
 		{
 			this.config.page.main.show();
@@ -206,10 +220,12 @@ class App
 			this.goTo( 'main' );
 		} else
 		{
-			this.config.page.egg.setUser( this.user );
-			//this.config.page.egg.show();
-			this.goTo( 'egg' );
-			//setTimeout( () => { this.config.page.egg.showMenu(); }, 1000 );
+			this.config.page.egg.setUser( this.user ).then( () =>
+			{
+				//this.config.page.egg.show();
+				this.goTo( 'egg' );
+				//setTimeout( () => { this.config.page.egg.showMenu(); }, 1000 );
+			} );
 		}
 	}
 
